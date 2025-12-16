@@ -125,7 +125,7 @@ DOWNLOADED_MOVIES = [
 ]
 
 
-SPLASH_MUSIC = r"C:/Users/sriva/OneDrive/Desktop/GUIPROJ/nightfall-future-bass-music-228100.mp3"
+SPLASH_MUSIC = r"music/nightfall-future-bass-music-228100.mp3"
 
 
 def open_main_app(parent):
@@ -279,7 +279,7 @@ def open_main_app(parent):
                 return
         lst.append(movie)
 
-#Moviesdetail popup
+
     def open_movie_detail(movie):
         """Opens a popup with detailed info about the movie."""
         detail = ctk.CTkToplevel(main_app)
@@ -306,7 +306,7 @@ def open_main_app(parent):
         )
         poster_label.grid(row=0, column=0, padx=10, pady=10)
 
-        # Right: info
+        
         info_frame = ctk.CTkFrame(detail, fg_color="transparent")
         info_frame.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
         info_frame.grid_columnconfigure(0, weight=1)
@@ -372,7 +372,7 @@ def open_main_app(parent):
         )
         credits_label.grid(row=4, column=0, sticky="w")
 
-        # Buttons (Like, Save for later, Trailer, Close)
+        
         buttons_frame = ctk.CTkFrame(info_frame, fg_color="transparent")
         buttons_frame.grid(row=5, column=0, sticky="w", pady=20)
 
@@ -439,14 +439,14 @@ def open_main_app(parent):
         )
         close_btn.grid(row=0, column=2)
 
-        # Load poster (reusing existing load_poster in a thread)
+        
         threading.Thread(
             target=load_poster,
             args=(poster_label, movie, main_app),
             daemon=True
         ).start()
 
-    # ---------- Movie card ----------
+    
     def create_movie_card(parent, movie, row, col):
         card_frame = ctk.CTkFrame(
             parent,
@@ -483,7 +483,7 @@ def open_main_app(parent):
         )
         poster_label.pack(pady=(10, 0))
 
-        # Load poster in background thread
+       
         threading.Thread(
             target=load_poster,
             args=(poster_label, movie, main_app),
@@ -494,7 +494,7 @@ def open_main_app(parent):
         poster_label.bind("<Button-1>", lambda e: movie_clicked(movie))
         title_label.bind("<Button-1>", lambda e: movie_clicked(movie))
 
-    # THREAD-SAFE POSTER LOADER
+    
     def load_poster(label, movie, app):
         
         try:
@@ -510,7 +510,7 @@ def open_main_app(parent):
                 if response.status_code == 200:
                     img_data = response.content
 
-                    # MAIN THREAD: all Tk work
+                   
                     def on_main_thread():
                         try:
                             if not label.winfo_exists():
@@ -537,7 +537,7 @@ def open_main_app(parent):
                     app.after(0, on_main_thread)
                     return
 
-            # If no poster / invalid URL
+           
             app.after(0, lambda: label.configure(
                 text=movie.get('Title', 'N/A')[:20],
                 wraplength=160
@@ -552,25 +552,25 @@ def open_main_app(parent):
                 wraplength=160
             ))
 
-    #  Update poster label 
+    
     def update_poster_label(label, photo):
         
         try:
             if label.winfo_exists():
                 label.configure(image=photo, text="")
-                label.image = photo  # keep reference
+                label.image = photo  
                 print("✓ Updated poster successfully")
         except Exception as e:
             print(f"Error in update: {e}")
             import traceback
             traceback.print_exc()
 
-    # ---------- Movie clicked: OPEN DETAIL POPUP ----------
+    
     def movie_clicked(movie):
         print(f"Clicked: {movie.get('Title')}")
         open_movie_detail(movie)
 
-    # ========= SEARCH FEATURE (FULL OMDB SEARCH) =========
+    
 
     def display_search_results(parent, movies, query):
         """Display search results in grid."""
@@ -677,8 +677,7 @@ def open_main_app(parent):
             daemon=True
         ).start()
 
-    # ========= REFRESH MOVIES =========
-
+    
     def load_movies():
         threading.Thread(target=fetchapi, daemon=True).start()
 
@@ -706,7 +705,7 @@ def open_main_app(parent):
 
         load_movies()
 
-    # ========= MUSIC MAIN WINDOW (USING JAMENDO) =========
+    
 
     def open_music_main():
         """Opens a full main window for music (20 tracks grid)."""
@@ -757,10 +756,10 @@ def open_main_app(parent):
         )
         status_label.pack()
 
-        # LOCAL list for tracks in this window
+        
         tracks_list = []
 
-        # ---- Jamendo fetch ----
+        
         def fetch_tracks(query=None):
             nonlocal tracks_list
             tracks_list.clear()
@@ -832,7 +831,7 @@ def open_main_app(parent):
             )
             err.pack(pady=80)
 
-        # ---- Music card & cover loader ----
+        
         def create_music_card(parent, track, row, col, app):
             card = ctk.CTkFrame(
                 parent,
@@ -875,7 +874,7 @@ def open_main_app(parent):
             )
             artist_lbl.pack()
 
-            # load cover
+           
             image_url = track.get("image")
             threading.Thread(
                 target=load_cover_image,
@@ -922,7 +921,7 @@ def open_main_app(parent):
                 print(f"Cover load error: {e}")
                 app.after(0, lambda: label.configure(text="Error"))
 
-        # ---- Track player window ----
+       
         def open_track_player(track, app):
             player = ctk.CTkToplevel(app)
             player.title(track.get("name", "Track"))
@@ -988,7 +987,7 @@ def open_main_app(parent):
             btn_frame = ctk.CTkFrame(right, fg_color="transparent")
             btn_frame.pack(anchor="w", pady=10)
 
-            audio_url = track.get("audio")  # Jamendo streaming URL
+            audio_url = track.get("audio")  
             cache_dir = "music_cache"
             os.makedirs(cache_dir, exist_ok=True)
             local_file = os.path.join(cache_dir, f"{track.get('id', 'track')}.mp3")
@@ -1058,11 +1057,11 @@ def open_main_app(parent):
             stop_btn = ctk.CTkButton(btn_frame, text="Stop", width=80, command=on_stop)
             stop_btn.grid(row=0, column=3, padx=5, pady=5)
 
-        # ---- search inside music window ----
+       
         def on_music_search():
             q = search_entry.get().strip()
             if not q:
-                # load popular tracks again
+                
                 for w in music_maincont.winfo_children():
                     w.destroy()
                 lbl = ctk.CTkLabel(
@@ -1097,10 +1096,10 @@ def open_main_app(parent):
         )
         music_search_btn.pack(side="left", padx=10, pady=15)
 
-        # initial load
+       
         threading.Thread(target=fetch_tracks, daemon=True).start()
 
-    # ========= HAMBURGER MENU WINDOWS =========
+   
 
     def open_downloaded_window():
         win = ctk.CTkToplevel(main_app)
@@ -1261,7 +1260,7 @@ def open_main_app(parent):
             "- Jamendo API for music\n"
             "- Pygame for audio playback\n\n"
             "Developers:\n"
-            "- Pratik Srivastava(logic, design, concept)\n"
+            "- Pratik Srivastava\n"
             "- Vatsal Soni"
             "- Rishi Tambi"
             "- \n\n"
@@ -1278,7 +1277,7 @@ def open_main_app(parent):
         )
         info_label.pack(padx=20, pady=10, anchor="w")
 
-    # Build the content of menu_panel
+   
     menu_title = ctk.CTkLabel(
         menu_panel,
         text="  ☰  Menu",
@@ -1299,7 +1298,7 @@ def open_main_app(parent):
     )
     btn_downloaded.pack(fill="x", padx=15, pady=5)
 
-    # MUSIC PLAYER -> now opens the MUSIC MAIN PAGE
+    
     btn_music = ctk.CTkButton(
         menu_panel,
         text="Music Player",
@@ -1344,7 +1343,7 @@ def open_main_app(parent):
     )
     btn_info.pack(fill="x", padx=15, pady=5)
 
-    # ---------- Buttons on top bar ----------
+   
     search_btn = ctk.CTkButton(
         top_bar,
         text="🔍",
@@ -1369,7 +1368,7 @@ def open_main_app(parent):
     )
     refresh_btn.pack(side="right", padx=15, pady=15)
 
-    # auto load on open
+    
     main_app.after(500, load_movies)
 
 
@@ -1446,10 +1445,9 @@ def front():
     
 
     
-    list1 = [
-         "down3.png", "down4.jpg",
-        "down5.png", "down6.jpg", "down7.jpg", "down8.jpg",
-         "download10.jpg", "download11.jpg","down31.jpg","down32.jpg","down33.jpg","down34.jpg","down36.jpg","down37.jpg"
+    list1 = [r"images/down1.jpg",r"images/down2.jpg",r"images/down3.png",r"images/down4.jpg",r"images/down5.png",r"images/down6.jpg",r"images/down7.jpg",
+             r"images/down8.jpg",r"images/down9.jpeg",r"images/down31.jpg",r"images/down32.jpg",r"images/down33.jpg",r"images/down34.jpg",r"images/down35.jpg",r"images/down36.jpg",r"images/down37.jpg",r"images\download10.jpg",r"images\download11.jpg"
+        
     ]
 
     canvas1 = ctk.CTkCanvas(app, bg="#000000", highlightthickness=0)
